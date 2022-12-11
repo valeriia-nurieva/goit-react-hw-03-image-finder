@@ -23,7 +23,6 @@ export class App extends Component {
       if (prevState.page !== page || prevState.query !== query) {
         this.setState({ isLoading: true });
         const images = await fetchImages(query, page);
-        toast.success(`Horray! We found ${images.totalHits} images.`);
         this.setState({ photos: images.hits, isLoading: false });
       }
     } catch (error) {
@@ -68,7 +67,7 @@ export class App extends Component {
           {photos && !isLoading && (
             <ImageGallery photos={photos} onSelect={this.selectImage} />
           )}
-          {photos.length > 0 && !isLoading && (
+          {photos.length > 11 && !isLoading && (
             <Button onClick={this.loadMore} />
           )}
           <ModalImage
