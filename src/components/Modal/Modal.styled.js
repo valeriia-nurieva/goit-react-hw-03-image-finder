@@ -6,5 +6,5 @@ export const ButtonClose = styled.button`
   outline: none;
   display: block;
   margin-left: auto;
-  padding: 0;
+  padding: 5px;
 `;
