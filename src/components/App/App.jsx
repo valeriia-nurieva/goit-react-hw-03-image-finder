@@ -1,29 +1,13 @@
 import { Component } from 'react';
-import axios from 'axios';
-import { fetchImage } from 'api';
+import { fetchImages } from 'api';
 import toast, { Toaster } from 'react-hot-toast';
 import { AppStyled } from './App.styled';
 import { Searchbar } from 'components/Searchbar/Searchbar';
 import { ImageGallery } from 'components/ImageGallery/ImageGallery';
 import { Loader } from 'components/Loader/Loader';
 import { Button } from 'components/Button/Button';
+import { ModalImage } from 'components/Modal/Modal';
 import { GlobalStyle } from 'components/GlobalStyle';
-import Modal from 'react-modal';
-const modalStyles = {
-  content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-    // maxWidth: calc('100vw' - '48px'),
-    // maxHeight: calc('100vh ' - '24px'),
-  },
-};
-Modal.setAppElement('#root');
-
-axios.defaults.baseURL = 'https://pixabay.com/api/';
 
 export class App extends Component {
   state = {
@@ -38,8 +22,9 @@ export class App extends Component {
       const { page, query } = this.state;
       if (prevState.page !== page || prevState.query !== query) {
         this.setState({ isLoading: true });
-        const images = await fetchImage(query, page)
-        this.setState({ photos: images, isLoading: false });
+        const images = await fetchImages(query, page);
+        toast.success(`Horray! We found ${images.totalHits} images.`);
+        this.setState({ photos: images.hits, isLoading: false });
       }
     } catch (error) {
       toast.error('Oops! Something went wrong! Please try again.');
@@ -61,17 +46,17 @@ export class App extends Component {
     });
   };
 
-  selectImage = (imgUrl) => {
+  selectImage = imgUrl => {
     this.setState({
-      selectedImage: imgUrl
-    })
-  }
+      selectedImage: imgUrl,
+    });
+  };
 
   resetImage = () => {
-        this.setState({
-      selectedImage: null
-    })
-  }
+    this.setState({
+      selectedImage: null,
+    });
+  };
 
   render() {
     const { photos, isLoading, selectedImage } = this.state;
@@ -79,18 +64,17 @@ export class App extends Component {
       <>
         <AppStyled>
           <Searchbar onSubmit={this.searchPhoto} />
-          {isLoading && <Loader />}
-          {photos && !isLoading && <ImageGallery photos={photos} onSelect={this.selectImage} />}          
-          {photos.length > 0 && !isLoading && <Button onClick={this.loadMore} />}
-          
-      <Modal
-        isOpen={Boolean(selectedImage)}
-        onRequestClose={this.resetImage}
-        style={modalStyles}
-      >
-        <button onClick={this.resetImage}>close</button>
-        <img src={selectedImage} alt="Large" />
-      </Modal>
+          {isLoading && <Loader/>}
+          {photos && !isLoading && (
+            <ImageGallery photos={photos} onSelect={this.selectImage} />
+          )}
+          {photos.length > 0 && !isLoading && (
+            <Button onClick={this.loadMore} />
+          )}
+          <ModalImage
+            selectImage={selectedImage}
+            resetImage={this.resetImage}
+          />
           <Toaster />
           <GlobalStyle />
         </AppStyled>

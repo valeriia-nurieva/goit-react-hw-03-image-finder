@@ -9,7 +9,7 @@ const params = {
   isImageModalOpen: false,
 };
 
-export const fetchImage = async (query, page) => {
+export const fetchImages = async (query, page) => {
   const response = await axios.get(`/?q=${query}&page=${page}`, { params });
-  return response.data.hits;
+  return response.data;
 };
