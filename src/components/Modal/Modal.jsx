@@ -1,6 +1,4 @@
 import Modal from 'react-modal';
-import { GrFormClose } from 'react-icons/gr';
-import { ButtonClose } from './Modal.styled';
 import PropTypes from 'prop-types';
 const modalStyles = {
   overlay: {
@@ -18,6 +16,11 @@ const modalStyles = {
   content: {
     maxWidth: 'calc(100vw - 48px)',
     maxHeight: 'calc(100vh - 24px)',
+    padding: '0',
+    backgroundColor: 'transparent',
+    border: 'none',
+    outline: 'none',
+    overflow: 'hidden',
   },
 };
 Modal.setAppElement('#root');
@@ -29,9 +32,6 @@ export const ModalImage = ({ selectImage, resetImage }) => {
       onRequestClose={resetImage}
       style={modalStyles}
     >
-      <ButtonClose onClick={resetImage}>
-        <GrFormClose />
-      </ButtonClose>
       <img src={selectImage} alt="Large" />
     </Modal>
   );

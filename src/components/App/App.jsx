@@ -19,11 +19,24 @@ export class App extends Component {
 
   async componentDidUpdate(_, prevState) {
     try {
-      const { page, query } = this.state;
+      const { page, query, photos } = this.state;
       if (prevState.page !== page || prevState.query !== query) {
         this.setState({ isLoading: true });
-        const images = await fetchImages(query, page);
-        this.setState({ photos: images.hits, isLoading: false });
+        const responce = await fetchImages(query, page);
+        const data = responce.hits.map(
+          ({ id, largeImageURL, tags, webformatURL }) => {
+            return {
+              id,
+              largeImageURL,
+              tags,
+              webformatURL,
+            };
+          }
+        );
+        this.setState({
+          photos: [...photos, ...data],
+          isLoading: false,
+        });
       }
     } catch (error) {
       toast.error('Oops! Something went wrong! Please try again.');
@@ -31,16 +44,21 @@ export class App extends Component {
   }
 
   loadMore = () => {
-    this.setState({ isLoading: true });
     this.setState(prevState => ({
       page: prevState.page + 1,
-      isLoading: false,
     }));
   };
 
-  searchPhoto = ({ query }) => {
+  searchPhoto = ({ searchQuery }) => {
+    const { query } = this.state;
+    if (searchQuery !== query) {
+      this.setState({
+        photos: [],
+        page: 1,
+      });
+    }
     this.setState({
-      query,
+      query: searchQuery,
       page: 1,
     });
   };
@@ -63,13 +81,13 @@ export class App extends Component {
       <>
         <AppStyled>
           <Searchbar onSubmit={this.searchPhoto} />
-          {isLoading && <Loader/>}
-          {photos && !isLoading && (
+          {photos.length > 0 && (
             <ImageGallery photos={photos} onSelect={this.selectImage} />
           )}
           {photos.length > 11 && !isLoading && (
             <Button onClick={this.loadMore} />
           )}
+          {isLoading && <Loader />}
           <ModalImage
             selectImage={selectedImage}
             resetImage={this.resetImage}
