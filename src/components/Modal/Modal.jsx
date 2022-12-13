@@ -14,6 +14,9 @@ const modalStyles = {
     zIndex: '1200',
   },
   content: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     maxWidth: 'calc(100vw - 48px)',
     maxHeight: 'calc(100vh - 24px)',
     padding: '0',
